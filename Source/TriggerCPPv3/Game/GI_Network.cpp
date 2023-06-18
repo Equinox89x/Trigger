@@ -142,7 +142,7 @@ void UGI_Network::EndMatch(const EName& sessionName)
 {
 	SessionInterface->EndSession(sessionName);
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->ClientTravel("/Game/Maps/FirstPersonMap", ETravelType::TRAVEL_Absolute);
+	PlayerController->ClientTravel("/Game/Maps/L_Main", ETravelType::TRAVEL_Absolute);
 	SessionInterface->DestroySession(sessionName);
 }
 #pragma endregion
