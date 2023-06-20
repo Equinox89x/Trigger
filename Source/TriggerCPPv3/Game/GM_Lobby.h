@@ -18,6 +18,8 @@ class TRIGGERCPPV3_API AGM_Lobby : public AGameMode
 public:
 	AGM_Lobby();
 
+	void StartGame();
+
 protected:
 	virtual void Tick(float deltaSeconds) override;
 	virtual void BeginPlay() override;

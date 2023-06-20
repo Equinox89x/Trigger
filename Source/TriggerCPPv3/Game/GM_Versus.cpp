@@ -11,7 +11,8 @@
 
 AGM_Versus::AGM_Versus(): Super() {
 	// set default pawn class to our Blueprinted character
-	DefaultPawnClass = nullptr;
+	static ConstructorHelpers::FClassFinder<AP_VRPawn> PPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.P_VRPawn'"));
+	DefaultPawnClass = PPawn.Class;
 	static ConstructorHelpers::FClassFinder<APlayerController> PCPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.PC_VRPawn'"));
 	PlayerControllerClass = PCPawn.Class;
 	static ConstructorHelpers::FClassFinder<APlayerState> PSPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.PS_Menu'"));

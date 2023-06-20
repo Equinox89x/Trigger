@@ -5,16 +5,23 @@
 #include <GameFramework/GameState.h>
 #include <Kismet/GameplayStatics.h>
 #include <TriggerCPPv3/Actors/Character/PC_VRPawn.h>
+#include <TriggerCPPv3/UI/A_StartButton.h>
 
 AGM_Lobby::AGM_Lobby() : Super() {
 	// set default pawn class to our Blueprinted character
-	DefaultPawnClass = nullptr;
+	static ConstructorHelpers::FClassFinder<AP_VRPawn> PPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.P_VRPawn'"));
+	DefaultPawnClass = PPawn.Class;
 	static ConstructorHelpers::FClassFinder<APlayerController> PCPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.PC_VRPawn'"));
 	PlayerControllerClass = PCPawn.Class;
 	static ConstructorHelpers::FClassFinder<APlayerState> PSPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.PS_Menu'"));
 	PlayerStateClass = PSPawn.Class;
 	static ConstructorHelpers::FClassFinder<AGameState> GSPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.GS_Menu'"));
 	GameStateClass = GSPawn.Class;
+}
+
+void AGM_Lobby::StartGame()
+{
+	if(CanPlay) GetWorld()->ServerTravel("L_Western", true);
 }
 
 void AGM_Lobby::BeginPlay()
@@ -70,6 +77,9 @@ void AGM_Lobby::OnPostLogin(AController* player)
 
 		FreeSpawns.Remove(spawn);
 	}
+
+	auto btn{ Cast<AA_StartButton>(UGameplayStatics::GetActorOfClass(GetWorld(), AA_StartButton::StaticClass())) };
+	btn->SetStartBtnActive(CanPlay);
 }
 
 void AGM_Lobby::OnLogout(AController* player)
@@ -78,6 +88,9 @@ void AGM_Lobby::OnLogout(AController* player)
 	player->Destroy();
 	ConnectedPlayers.Remove(player);
 	CanPlay = ConnectedPlayers.Num() > 3 && ConnectedPlayers.Num() % 2 == 0;
+
+	auto btn{ Cast<AA_StartButton>(UGameplayStatics::GetActorOfClass(GetWorld(), AA_StartButton::StaticClass())) };
+	btn->SetStartBtnActive(CanPlay);
 }
 
 void AGM_Lobby::GenericPlayerInitialization(AController* player)

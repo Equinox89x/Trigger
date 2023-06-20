@@ -10,7 +10,6 @@
 
 AGM_Menu::AGM_Menu() {
 	// set default pawn class to our Blueprinted character
-	DefaultPawnClass = nullptr;
 	static ConstructorHelpers::FClassFinder<APC_VRPawn> PCPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.PC_VRPawn'"));
 	PlayerControllerClass = PCPawn.Class;		
 	static ConstructorHelpers::FClassFinder<AP_VRPawn> PPawn(TEXT("/Script/CoreUObject.Class'/Script/TriggerCPPv3.P_VRPawn'"));
