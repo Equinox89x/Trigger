@@ -20,12 +20,10 @@ class TRIGGERCPPV3_API AGM_Menu : public AGameMode
 public:
 	AGM_Menu();
 
-	const FTransform FindPlayerStart();
-	void SpawnPlayer(APlayerController* controller);
-
 	TArray<FName> sessions{};
 
 protected:
+	virtual void BeginPlay();
 	virtual void Tick(float deltaSeconds);
 
 private:
@@ -47,6 +45,5 @@ private:
 		virtual void GenericPlayerInitialization(AController* player);
 
 	virtual void HandleStartingNewPlayer();
-	void SetupSpawn();
 
 };

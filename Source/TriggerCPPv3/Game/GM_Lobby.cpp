@@ -28,6 +28,17 @@ void AGM_Lobby::BeginPlay()
 		FreeSpawns.Push(Cast<APlayerStart>(actor));
 	}
 
+	FName CurrentPlayerType{ IsBandit ? "Bandit" : "Sheriff" };
+	auto spawn = *FreeSpawns.FindByPredicate([&](const APlayerStart* start) {
+		return start->PlayerStartTag == CurrentPlayerType;
+		});
+	IsBandit = !IsBandit;
+
+	auto player{ UGameplayStatics::GetPlayerController(GetWorld(), 0) };
+	AP_VRPawn* newPawn{ GetWorld()->SpawnActor<AP_VRPawn>(AP_VRPawn::StaticClass(), spawn->GetTransform()) };
+	player->Possess(newPawn);
+
+	FreeSpawns.Remove(spawn);
 }
 void AGM_Lobby::Tick(float deltaSeconds)
 {
@@ -45,7 +56,20 @@ void AGM_Lobby::OnPostLogin(AController* player)
 {
 	ConnectedPlayers.Add(player);
 
-	CanPlay = ConnectedPlayers.Num() > 3 && ConnectedPlayers.Num() % 2 == 0;
+
+	if (!FreeSpawns.IsEmpty()) {
+		CanPlay = ConnectedPlayers.Num() > 3 && ConnectedPlayers.Num() % 2 == 0;
+		FName CurrentPlayerType{ IsBandit ? "Bandit" : "Sheriff" };
+		auto spawn = *FreeSpawns.FindByPredicate([&](const APlayerStart* start) {
+			return start->PlayerStartTag == CurrentPlayerType;
+			});
+		IsBandit = !IsBandit;
+
+		AP_VRPawn* newPawn{ GetWorld()->SpawnActor<AP_VRPawn>(AP_VRPawn::StaticClass(), spawn->GetTransform()) };
+		player->Possess(newPawn);
+
+		FreeSpawns.Remove(spawn);
+	}
 }
 
 void AGM_Lobby::OnLogout(AController* player)
@@ -59,22 +83,5 @@ void AGM_Lobby::OnLogout(AController* player)
 void AGM_Lobby::GenericPlayerInitialization(AController* player)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Player init: " + player->GetName()));
-
-		FName CurrentPlayerType{ IsBandit ? "Bandit" : "Sheriff" };
-		auto spawn = *FreeSpawns.FindByPredicate([&](const APlayerStart* start) {
-			return start->PlayerStartTag == CurrentPlayerType;
-		});
-		IsBandit = !IsBandit;
-
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnInfo.OverrideLevel = GetLevel();
-		APC_VRPawn* vrController = GetWorld()->SpawnActor<APC_VRPawn>(APC_VRPawn::StaticClass(), spawn->GetActorLocation(), spawn->GetActorRotation(), SpawnInfo);
-		if (vrController)
-		{
-			vrController->Possess(GetWorld()->SpawnActor<AP_VRPawn>());
-		}
-
-		FreeSpawns.Remove(spawn);
 }
 #pragma endregion

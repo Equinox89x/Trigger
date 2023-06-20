@@ -38,13 +38,23 @@ void APC_VRPawn::BeginPlay()
 	FString mapname{ GetWorld()->GetMapName() };
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, mapname);
 	if (IsLocalPlayerController()) {
-		SRSpawnPlayer();
+		//SRSpawnPlayer();
+
+		
+		//FTransform trans{ UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass())->GetTransform() };
+		//auto vrController{ Cast<APC_VRPawn>(UGameplayStatics::GetPlayerController(GetWorld(),0)) };
+		//vrController->ClientSetLocation(trans.GetLocation(), trans.GetRotation().Rotator());
+		//Player = GetWorld()->SpawnActor<AP_VRPawn>(AP_VRPawn::StaticClass(), trans);
+		//vrController->Possess(Player);
+
 		Player = Cast<AP_VRPawn>(GetPawn());
 	}
 }
 
 void APC_VRPawn::SetupInputComponent()
 {
+	Super::SetupInputComponent();
+
 	UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (subsystem) {
 		subsystem->ClearAllMappings();
@@ -52,41 +62,29 @@ void APC_VRPawn::SetupInputComponent()
 	}
 
 	if (UEnhancedInputComponent* enhancedComponent = Cast<UEnhancedInputComponent>(InputComponent)) {
-		//enhancedComponent->BindAction("GoToThere", EInputEvent::IE_Pressed, this, &AP_VRPawn::GoToThere);
 
-		if (GrabRight) {
 			enhancedComponent->BindAction(GrabRight, ETriggerEvent::Started, this, &APC_VRPawn::GrabRightPressed);
 			enhancedComponent->BindAction(GrabRight, ETriggerEvent::Completed, this, &APC_VRPawn::GrabRightReleased);
-		}
-		if (GrabLeft) {
+
 			enhancedComponent->BindAction(GrabLeft, ETriggerEvent::Started, this, &APC_VRPawn::GrabLeftPressed);
 			enhancedComponent->BindAction(GrabLeft, ETriggerEvent::Completed, this, &APC_VRPawn::GrabLeftReleased);
-		}
 
-		if (TriggerLeft) {
 			enhancedComponent->BindAction(TriggerLeft, ETriggerEvent::Started, this, &APC_VRPawn::ShootGunLeft);
 			enhancedComponent->BindAction(TriggerLeft, ETriggerEvent::Completed, this, &APC_VRPawn::ShootGunReleasedLeft);
 			enhancedComponent->BindAction(TriggerLeft, ETriggerEvent::Canceled, this, &APC_VRPawn::ShootGunReleasedLeft);
-		}
-		if (TriggerRight) {
+
 			enhancedComponent->BindAction(TriggerRight, ETriggerEvent::Started, this, &APC_VRPawn::ShootGunRight);
 			enhancedComponent->BindAction(TriggerRight, ETriggerEvent::Completed, this, &APC_VRPawn::ShootGunReleasedRight);
 			enhancedComponent->BindAction(TriggerRight, ETriggerEvent::Canceled, this, &APC_VRPawn::ShootGunReleasedRight);
-		}
 
-		if (Movement) {
 			enhancedComponent->BindAction(Movement, ETriggerEvent::Triggered, this, &APC_VRPawn::Move);
-		}
-		if (Rotate) {
-			enhancedComponent->BindAction(Rotate, ETriggerEvent::Triggered, this, &APC_VRPawn::Turn);
-		}
 
-		if (ReloadLeftKey) {
+			enhancedComponent->BindAction(Rotate, ETriggerEvent::Triggered, this, &APC_VRPawn::Turn);
+
 			enhancedComponent->BindAction(ReloadLeftKey, ETriggerEvent::Triggered, this, &APC_VRPawn::ReloadLeft);
-		}
-		if (ReloadRightKey) {
+
 			enhancedComponent->BindAction(ReloadRightKey, ETriggerEvent::Triggered, this, &APC_VRPawn::ReloadRight);
-		}
+		
 	}
 
 }
@@ -120,29 +118,17 @@ void APC_VRPawn::GrabRightPressed() { Player->GrabPressed(true);}
 void APC_VRPawn::GrabLeftPressed() {Player->GrabPressed(false);}
 #pragma endregion
 
-void APC_VRPawn::AcknowledgePossession(APawn* P)
-{
-	Super::AcknowledgePossession(P);
-
-	//if it is any mode than the menugamemode
-	/*AGM_Menu* gm{ Cast<AGM_Menu>(GetWorld()->GetAuthGameMode()) };
-	if (!gm) {
-		DisableInput(GetWorld()->GetFirstPlayerController());
-	}*/
-	
-}
-
-void APC_VRPawn::SRSpawnPlayer_Implementation()
-{
-
-	AGM_Menu* gm{ Cast<AGM_Menu>(GetWorld()->GetAuthGameMode()) };
-	if (gm) {
-		gm->SpawnPlayer(this);
-		return;
-	}
-	AGM_Versus* gm2{ Cast<AGM_Versus>(GetWorld()->GetAuthGameMode()) };
-	if (gm2) {
-		gm2->SpawnPlayer(this);
-		return;
-	}
-}
+//void APC_VRPawn::SRSpawnPlayer_Implementation()
+//{
+//
+//	AGM_Menu* gm{ Cast<AGM_Menu>(GetWorld()->GetAuthGameMode()) };
+//	if (gm) {
+//		//gm->SpawnPlayer(this);
+//		return;
+//	}
+//	AGM_Versus* gm2{ Cast<AGM_Versus>(GetWorld()->GetAuthGameMode()) };
+//	if (gm2) {
+//		gm2->SpawnPlayer(this);
+//		return;
+//	}
+//}

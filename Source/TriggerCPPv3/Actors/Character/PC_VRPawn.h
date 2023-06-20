@@ -52,10 +52,9 @@ public:
 
 	APC_VRPawn();
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-		void SRSpawnPlayer();
+	//UFUNCTION(BlueprintCallable, Server, Reliable)
+	//	void SRSpawnPlayer();
 
-	virtual void AcknowledgePossession(class APawn* P);
 
 protected:
 	virtual void BeginPlay() override;
